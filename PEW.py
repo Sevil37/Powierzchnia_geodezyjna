@@ -211,7 +211,8 @@ class PEW:
                                     QgsField('sigma', QVariant.Double),
                                     QgsField('skal_m', QVariant.Double),
                                     QgsField('delta_p', QVariant.Double),
-                                    QgsField('pow_geod', QVariant.Double)])
+                                    QgsField('pow_geod', QVariant.Double),
+                                    QgsField('pow_ha', QVariant.Double, len=10, prec=4)])
             layer.updateFields()
             idx_pow_mat = layer.fieldNameIndex('pow_mat')
             idx_x_2000 = layer.fieldNameIndex('X_2000')
@@ -224,6 +225,7 @@ class PEW:
             idx_skal_m = layer.fieldNameIndex('skal_m')
             idx_delta_p = layer.fieldNameIndex('delta_p')
             idx_pow_geod = layer.fieldNameIndex('pow_geod')
+            idx_pow_ha = layer.fieldNameIndex('pow_ha')
         
             layer.startEditing()
             for f in layer.getFeatures():
@@ -320,6 +322,15 @@ class PEW:
                 value_e8 = e8.evaluate(o)
                 layer.changeAttributeValue(o.id(), idx_pow_geod, value_e8)
 
+            layer.commitChanges()
+            
+            layer.startEditing()
+            for p in layer.getFeatures():
+                e9 = QgsExpression("pow_geod/10000")
+                e9.prepare(layer.pendingFields())
+                value_e9 = e9.evaluate(p)
+                layer.changeAttributeValue(p.id(), idx_pow_ha, value_e9)
+            
             layer.commitChanges()
             
             #usuwanie zbednych kolumn  
